@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A resilient component demonstrating a loading skeleton.">
+    <meta name="description" content="A resilient component demonstrating loading and live data states.">
     <title>Resilient Component Demo</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -13,16 +14,25 @@
     <header class="site-header">
       <p class="eyebrow">Exercise 3 · State modeling</p>
       <h1>Resilient Component Architecture</h1>
-      <p>A small component that communicates when service metrics are loading.</p>
+      <p>A small component that communicates loading and live service metrics.</p>
     </header>
 
     <main id="main-content" tabindex="-1">
+      <section class="demo-controls" aria-labelledby="controls-heading">
+        <h2 id="controls-heading">Load service metrics</h2>
+        <p>The result begins with a loading skeleton before showing local sample data.</p>
+        <ul class="control-list">
+          <li><button type="button" data-result="live">Load live data</button></li>
+        </ul>
+      </section>
+
       <section class="metrics-panel" id="metrics-panel" aria-labelledby="panel-heading" aria-busy="true">
         <header class="panel-header">
           <p class="eyebrow">Service overview</p>
           <h2 id="panel-heading">Platform health</h2>
         </header>
         <p class="sr-only" id="panel-announcement" role="status" aria-live="polite" aria-atomic="true">Loading service metrics.</p>
+        <ul class="metrics-grid" id="live-state" aria-label="Current service metrics" hidden></ul>
         <ul class="skeleton-grid" id="loading-state" aria-hidden="true">
           <li class="skeleton-card"><span class="skeleton-line skeleton-short"></span><span class="skeleton-line skeleton-long"></span><span class="skeleton-line skeleton-mid"></span></li>
           <li class="skeleton-card"><span class="skeleton-line skeleton-short"></span><span class="skeleton-line skeleton-long"></span><span class="skeleton-line skeleton-mid"></span></li>
