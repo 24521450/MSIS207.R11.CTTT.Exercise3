@@ -2,7 +2,10 @@ const panel = document.querySelector("#metrics-panel");
 const announcement = document.querySelector("#panel-announcement");
 const loadingState = document.querySelector("#loading-state");
 const liveState = document.querySelector("#live-state");
-const loadButton = document.querySelector('[data-result="live"]');
+const emptyState = document.querySelector("#empty-state");
+const errorState = document.querySelector("#error-state");
+const retryButton = document.querySelector("#retry-button");
+const resultButtons = document.querySelectorAll("[data-result]");
 
 const sampleMetrics = [
   {
@@ -27,6 +30,8 @@ const sampleMetrics = [
     metadata: ["Median", "Last hour"]
   }
 ];
+
+let activeRequest = 0;
 
 function createMetricCard(metric) {
   const item = document.createElement("li");
@@ -57,25 +62,67 @@ function createMetricCard(metric) {
   return item;
 }
 
-function renderLoading() {
-  panel.setAttribute("aria-busy", "true");
-  loadingState.hidden = false;
-  liveState.hidden = true;
-  announcement.textContent = "Loading service metrics.";
+function renderState(state) {
+  const isLoading = state === "loading";
+  panel.dataset.state = state;
+  panel.setAttribute("aria-busy", String(isLoading));
+  loadingState.hidden = !isLoading;
+  liveState.hidden = state !== "live";
+  emptyState.hidden = state !== "empty";
+  errorState.hidden = state !== "error";
+
+  if (state === "loading") {
+    announcement.textContent = "Loading service metrics.";
+    return;
+  }
+
+  if (state === "live") {
+    liveState.replaceChildren(...sampleMetrics.map(createMetricCard));
+    announcement.textContent = "Service metrics loaded.";
+    return;
+  }
+
+  if (state === "empty") {
+    announcement.textContent = "No service metrics are available for this time range.";
+    return;
+  }
+
+  announcement.textContent = "Metrics could not be loaded. A retry action is available.";
 }
 
-function renderLive() {
-  panel.setAttribute("aria-busy", "false");
-  loadingState.hidden = true;
-  liveState.replaceChildren(...sampleMetrics.map(createMetricCard));
-  liveState.hidden = false;
-  announcement.textContent = "Service metrics loaded.";
+function wait(milliseconds) {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }
 
-function loadLiveMetrics() {
-  renderLoading();
-  window.setTimeout(renderLive, 650);
+async function loadResult(result) {
+  const requestId = ++activeRequest;
+  renderState("loading");
+
+  await wait(650);
+
+  if (requestId !== activeRequest) {
+    return;
+  }
+
+  renderState(result);
 }
 
-loadButton.addEventListener("click", loadLiveMetrics);
-loadLiveMetrics();
+resultButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const result = button.dataset.result;
+
+    if (result === "loading") {
+      activeRequest += 1;
+      renderState("loading");
+      return;
+    }
+
+    loadResult(result);
+  });
+});
+
+retryButton.addEventListener("click", () => {
+  loadResult("live");
+});
+
+loadResult("live");

@@ -243,6 +243,35 @@ h3 {
   to { background-position: -100% 0; }
 }
 
+.state-message {
+  margin: 0;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--surface-raised);
+}
+
+.error-state {
+  max-width: 42rem;
+  padding: 1.25rem;
+  border: 1px solid var(--danger-text);
+  border-radius: 0.9rem;
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.error-state h3 {
+  margin-bottom: 0.5rem;
+}
+
+.error-state p {
+  margin-bottom: 1rem;
+}
+
+.error-state .button-primary {
+  background: var(--danger-text);
+  color: var(--on-accent);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
